@@ -1,4 +1,15 @@
 
+Become a root user:
+
+...
+
+sudo su -
+...
+
+
+
+
+
 git configuration to set up a username and email address
 
 3 types: system : configuration of git done for entire system
