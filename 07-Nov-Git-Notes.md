@@ -1,7 +1,9 @@
 
 git configuration to set up a username and email address
 
-3 types: system : configuration of git done for entire system global : configuration of git done for that particular user you are logged into the server(root) local : configuration of git done for that particular folder (myproject)
+3 types: system : configuration of git done for entire system
+global : configuration of git done for that particular user you are logged into the server(root)
+local : configuration of git done for that particular folder (myproject)
 
 $ git config --global user.name sonal0409
 
