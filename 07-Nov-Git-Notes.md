@@ -6,7 +6,30 @@ Become a root user:
 sudo su -
 ...
 
+Go into your project working directory:
 
+...
+cd myproject
+ls  ==> we have 2 files
+...
+
+Add the file to the stagging area:
+
+...
+git add index1.html
+...
+
+Commit the chnages that are stagged
+
+...
+git commit -m "give any message"
+...
+
+Commit the chnages from a single file that is stagged
+
+...
+git commit -m "give any message" <filename>
+...
 
 
 
