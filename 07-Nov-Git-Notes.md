@@ -62,6 +62,15 @@ Where is this config saved- in which file
 --system level configuration will be saved at location:
        
         cat /etc/gitconfig
+ 
+ Unset the configurations:
+ 
+ git config --global --unset user.name
+ git config --global --unset user.email
+ 
+ Check the git global config
+ 
+ git config --global --list
 
 ********************************************************
 git log
