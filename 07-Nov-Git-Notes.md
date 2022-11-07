@@ -54,7 +54,14 @@ Where is this config saved- in which file
 
 --global config will be save : ~/.gitconfig
 
-$ cat ~/.gitconfig
+ cat ~/.gitconfig
+       
+-- local level configurations are saved at location : 
+       cat .git/config
+       
+--system level configuration will be saved at location:
+       
+        cat /etc/gitconfig
 
 ********************************************************
 git log
