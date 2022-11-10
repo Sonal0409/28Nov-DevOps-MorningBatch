@@ -31,9 +31,9 @@ Select centos OS
 
 Go to Ec2 machine and execute commands:
 
- sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
+  sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
   sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
-   yum install jenkins -y
+  yum install jenkins -y
 
 Execute command to start jenkins server:
 
