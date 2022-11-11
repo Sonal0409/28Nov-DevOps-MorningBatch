@@ -244,11 +244,19 @@ In this give:
 1. Uncheck -- install automatically
 2. JDK name as myjava
 3. Go to server type 
-# echo $JAVA_HOME ==> will give java location
-JAVA_HOME =
-/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.265.b01-1.amzn2.0.1.x86_64
+Execute the command :
+alternatives --config java
 
-Save it.
+Copy the path of java as shown by command output :
+
+like this:  /usr/lib/jvm/java-11-openjdk-11.0.16.0.8-1.amzn2.0.1.x86_64
+
+Also give number 1 for 
+Enter to keep the current selection[+], or type selection number: 
+
+Take the path and add it in jenkins for JAVA_HOME field
+
+Save the changes.
 
 Under GIT==> leave it same 
 
