@@ -1,0 +1,45 @@
+
+kubectl get nodes
+kubectl get nodes -o wide
+
+Labels in kubernetes are used to select pods of similar type
+
+
+Create a single pod:
+
+vim pod-defintion.yml
+
+apiVersion: v1
+kind: Pod
+metadata:
+ name: pod1
+ labels:
+  author: sonal
+  company: edureka
+  app: frontend
+spec:
+ containers:
+  - name: c1
+    image: nginx
+    
+    kubectl create -f pod-defintion.yml
+    kubectl get pods
+  kubectl get pods -o wide
+  kubectl get pods --show-labels
+  kubectl get pods -l app=frontend
+  
+  For pod and container logs:
+  
+  kubectl describe pod pod1 | less
+  kubectl logs pod1
+  kubectl logs -f pod1
+  kubectl logs -f pod1 -c c1  
+  
+  
+  
+  
+  
+  
+  
+  
+  
