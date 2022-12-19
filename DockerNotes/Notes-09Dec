@@ -1,0 +1,99 @@
+Install docker:
+**********************
+ yum install docker -y
+ systemctl start docker
+
+
+Docker Images
+**************************
+List images in docker Host
+...
+docker images
+...
+
+Pull image from docker hub to docker Host
+
+...
+docker pull ubuntu
+
+docker pull ubuntu:18.04
+
+docker images
+...
+
+Where are the images stored on docker ?
+
+The docker images get saved in /var/lib/docker/overlay2 storage
+
+...
+
+IQ > What is a dangling image?
+
+An image that is not associated to a container. You can delete them
+
+Command to delete image:
+...
+
+docker rmi ubuntu ubuntu:18.04
+docker rmi ubuntu:18.04
+...
+
+IQ > COmmand in docker to clean up the docker host, remove all the dangling images
+
+  - all stopped containers
+  - all networks not used by at least one container
+  - all images without at least one container associated to them
+  - all build cache
+
+...
+docker system prune --a
+...
+
+When we run an Image
+ > to give a custom name to the container
+ > container status to Up and running
+
+
+Learn now --> docker run command Options
+
+--name : with this you can cutsom name
+
+1. Foreground Mode (-it)
+
+ > container will be created
+ > container will be up & running
+ > user will be attached to the terminal of the container (Inside the container)
+
+
+docker run -it --name cont1 ubuntu
+
+root@7f83f7639f1d
+
+Comout of container and keep it running:
+
+ ctl pq
+
+Attach to the container terminal again:
+
+docker attach containername/id
+
+Comout of container and stop the container
+
+exit
+
+Start a container:
+
+docker start containername
+
+docker stop containername
+
+
+IQ > How can we check all the process running in a container.
+
+ docker container top 7f83f7639f1d
+
+IQ > From the docker host execute the command to check the stats of the container, CPU, MEM
+
+  docker container stats 7f83f7639f1d
+
+2. Detached Mode

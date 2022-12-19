@@ -536,3 +536,199 @@ Jenkins will automatically scan the branches of the repo and create pipeline job
 
 Click on multibranch pipeline job name and you will see the 3 jobs created for 3 branches.
 
+Master and slave set up:
+
+1. Master machine and change the Jenkisn URL in Jenkins configure system section
+
+Manage Jenkins --> configure system --> scroll down --> Jenkins Location-->give the latest Jenkins URL ==> save it
+
+update the latest URL over there
+
+
+2. For master and slave to communicate , you will need Agent port
+
+By default it is disabled in jenkins. You need to enable it
+
+Manage Jenkins --> Configure global security --> scroll down to Agent section ==> select random ==> save it
+
+
+Slave set up:
+***********************
+
+Install the following tools:
+
+Git installation:
+
+yum install git -y
+
+
+JAVA Installation
+
+ yum install java-1.8.0-openjdk-devel
+
+Maven Installation:
+***************
+yum install maven -y
+
+
+Create the root directory/workspace on the slave for master to place the rmeote files and output files
+*******************************
+cd /tmp
+
+mkdir jenkinsdir
+
+We need to give permission to this directory, so that master can read and write int this directory
+
+ chmod -R 777 /tmp/jenkinsdir
+
+This is the path of directory
+
+/tmp/jenkinsdir
+
+
+******************************************
+
+Connect Master to the Slave
+
+*****************************************
+
+Manage jenkins--> Manage nodes & clouds --> on left side click on New node
+
+Give name as Jnekinsslave --> select permanent agent --> click on create
+
+
+Name: already populated
+
+Description: Slave is of Lunix OS
+
+Number of executors: 1
+
+here executors means, jobs that can be executed on the slave at a time
+
+Remote root directory: /tmp/jenkinsdir
+
+Label: jenkinsSlave
+
+Usage: Only build jobs with label expression matching this node
+
+Launch method:
+
+how do you want to connect slave to master
+
+1. Launch method : select==> launch agents via ssh
+
+Host : private ip address of slave
+
+Credentials:
+Click on Add button --> click on jenkins button
+
+Kind: SSH username with private key
+
+id: jenkisnslave
+
+description: slave credentials
+
+Username: ec2-user
+
+Private Key :  click on Enter directly ==> click on add button
+
+Open the pem file of slave server using notepad in your downloads folder
+
+and copy all the contents ==> CTL A + CTL C
+
+and paste it under private key step
+
+Click on add button
+
+
+In credentials drop down select the credentials
+
+
+Host Key Verification Strategy
+
+> select Non verifying verification strategy
+
+Availability : keep this node online as much as psosible
+
+Tool location
+********************
+
+Location of tool git and java on the slave
+
+git :  /usr/bin/git
+
+java: /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.332.b09-1.amzn2.0.2.x86_64
+
+
+
+
+
+
+
+********************************************
+Windows:
+************************************
+Master and Slave Set up
+
+restart the instance.
+Restart the jenkins server
+now take public ip and loginto jenkins
+
+Step 1: Go to Manage Jenkins ---> CONFIGURE SYSTEM ---> Check the Jenkins URL is same as URL of browser --> Save
+Step 2: Go to Manage Jenkins---> CONFIGURE GLOBAL SECURITY --> Scroll down to AGENTS-->select RANDOM radiobutton--> Save
+Step 3: Go to Manage Jenkins---> MAnage Nodes and Clouds  --> New Node
+
+Select New Node--> give name as Winslave--> select radio button permanamet Agent
+
+Name : winslave
+Description: give windows 10 machine 
+==> # of executors = 1 ==> means number of jobs that we want to run on this slave node. Let it be 1 for now
+===> Remote root directory ==> C:\jenkinsdir
+Location of a directory folder on your windows machine , so that jenkins can create a workspace folder and store all the files. As we have seen earlier while executiong jobs.
+For this --> got to C drive and create an emapty folder.
+C:\jenkinsdir
+
+====>  Label : win_slave ==> this is like a tag to slave machine. This is how we will identify the slave machine--> remeber this
+
+===> Usage: 
+Select 2nd option: Only build jobs with label expressionmatching the job :
+This means for which ever job we will give label as win_slave that job only will run on this job.
+
+===> Launch Method : select option : Launch agent by connecting to master.
+
+Scroll down
+
+Add tools
+
+Add git path as C:\Program Files\Git\cmd\git.exe
+Add java path as C:\Program Files (x86)\Java\jdk1.8.0_191
+
+SAVE the job.
+
+Now go to win_slave ==> download the agent.jar file and put it in your jenkinsdir folder.
+
+Copy the path and change the public ip in below path
+java -jar agent.jar -jnlpUrl http://3.139.60.71:8080/computer/winslave/slave-agent.jnlp -secret 61e8e20badd531b48caeffac8d686f182eb2d77a1c303ee39c5db9d00117c0be -workDir "C:\jenkinsdir"
+
+Go to bash and start jenkins, refresh instance
+Go to cmd prompt
+change to cd c:\jenkinsdir
+copy the above jenkins agent path
+System will get connected.
+
+***************************************
+RUN a job on Agent
+
+Go to Dashboard
+
+Select the package job---> configure --> GENERAL --> click on Restrict where this project can be run and enter win_slave  
+
+SAVE THE JOB
+
+CLICK on BUILD NOW -- to start the build
+
+CLick on build number--> got to console --to check it is executing on AGent
+
+Go to C folder-->jekinsdir---> C:\jenkinsdir\workspace\package\target==> 
+you will see addressbook.war file.
+
