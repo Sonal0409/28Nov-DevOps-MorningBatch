@@ -1,0 +1,310 @@
+
+docker commands will always work with root permissions
+
+Install docker
+
+$ sudo su -
+$ yum install docker -y
+$ systemctl start docker 
+
+Docker home directory:
+
+cd /var/lib/docker
+
+*************************
+
+
+Naming convetion for an zimage in docker is as follows
+
+ every image will have a unique name
+
+ every image will have a tag(verison)
+
+ Generally  name of image will look like:
+
+   imagename:tagname
+
+ docker will assume it has to pull image from docker hub library
+
+ so the actual image name is:
+
+ docker.io/library/imagename:tagname
+
+
+$ docker pull ubuntu
+
+
+$ docker pull ubuntu:18.04
+
+
+every user on docker hub have their own repository to store their custom image
+
+
+ in this case name of image will be
+
+ docker pull  sonal04/myimage:v1
+
+You have your own private container registry and a private repo
+
+
+ in this case name of image will be
+
+ docker pull  privateregitryip/myrepo/myimage:v1
+
+
+Commands to pull images on docker:
+
+docker pull ubuntu
+
+$ docker images
+
+$ docker pull ubuntu:18.04
+
+you cannot delete docker official images  in docker hub
+
+but you can deletd the pull images into docker host
+
+$ docker rmi Imagename:tagname 
+
+$ docker rmi ubuntu:18.04
+
+Create the container from an Image:
+
+$ docker run ubuntu
+
+to see if container is created or not
+
+a container will have status like: up, exited, exited(error code), 
+$ docker ps -a
+
+
+will return all the container in any status
+
+$ docker ps
+
+will return containers with status UP & running
+
+$ docker container ls
+
+will return containers with status UP & running
+
+
+Run options: options to be used with run command
+
+--name : to give a unique name to the container
+
+Creating a container 
+
+ > container should be up & running
+
+Method 1: Foreground mode (-it)
+
+  > the container status will be up & running
+  > user will be logged on to the terminal of the container
+  > user will be attched/connected to the container
+
+Method 2: Detached mode (-d)
+
+  > the container status will be up & running
+  > User will not be attached/connected to the container
+  > container will be running like running in background
+
+
+Command to delete container:
+
+$ docker rm -f containerid/name
+
+Create a container:
+
+docker run --name u1 -it ubuntu
+
+Comeout of container:
+
+comout of container and keep container running
+
+ $ CTL pq
+
+comout of container and keep container Exited status
+
+$ exit
+
+
+You are on the host machine and you want to connect to terminal of the OS container
+
+$ docker attach containerName/id
+
+$ docker stop u1
+
+$ docker start u1
+
+
+Execute a command on the conatiner from host cursor
+
+docker exec -it n1 bash
+
+
+Using the exec or attach command, you can access the application. folders.files on the conatiner
+
+You can access the applicationd eployed on container using your browser and container port number
+
+
+Port mapping/ port forwarding:
+
+This concept is applicaple to only web image
+
+not applicable to OS image
+
+
+Port mapping has to be done with docker run command
+
+after the conatiner is created/running, you cannot do port mapping neither you cannot chnage port number
+
+-p  : prt mapping option
+
+
+-p systemport:containerport
+
+docker run -p 8787:80 --name n2 -d nginx
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
