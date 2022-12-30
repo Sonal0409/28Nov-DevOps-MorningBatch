@@ -1,0 +1,137 @@
+
+
+Project 2:
+
+Cretae a VM
+
+install git, jenkins & docker
+
+On jenkins
+
+Step1:
+
+Install plugin Docker pipeline
+
+Docker Pipeline
+
+................
+
+Step 2:
+
+Create credentials in Jenkinsfor dockerhub to push images to dockerhub
+
+Step 3:
+
+Take the code (if taking a diffrent code repo) and write dockerfile for it . Maintain the dockerfile in github repo
+
+OR use my repository as given below:
+
+https://github.com/purduedemo/ELKExample.git
+
+The repo includes, Code, Dockefile & Jenkinsfile
+
+
+
+
+Step 4: Write a pipeline code to build the dockerfile
+
+
+...
+
+Just for your understanding
+*****************************
+in the same repo write the jenkins file with pipeline code
+stage (clone the repo)
+
+stage(build the code)
+
+stage(build the image)
+
+stage(push the image)
+
+
+docker login
+
+docker push dockerhubaccount/imagename:tagename
+
+docker push sonal04/springbootapp
+${dockerhubaccountid}/${application}:${BUILD_NUMBER}
+sonal04/springbootapp:2
+
+*****************************************
+
+Step 4:
+
+use the edureka lab --> kubernetes cluster
+
+create the below yaml file to create replicas of the your image pushed to dockerhub - for example: sonal04/springbootapp:2
+
+Then deploy HPA
+
+generate load --> which will increase the pods
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: project2
+  labels:
+    app: myapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      name: mypod
+      labels:
+        app: myapp
+    spec:
+      containers:
+        - name: c1
+          image: sonal04/springbootapp:2
+          resources:
+            limits:
+              cpu: 10m
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp-svc
+spec:
+  type: ClusterIP  ## this is default if we do not type in service definition
+  selector:
+    app: myapp
+  ports:
+   - protocol: TCP
+     port: 8080
+     targetPort: 8080
+
+---
+
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: myapp-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: project2
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 5
+
+
+Create a load generator pod to send requests to PODs
+
+--> step 5: deploy prometheous and grafana pod .. moniotr the deployment
+
+
+That completes the project.
+
+Submit all the steps as a word document with screenshots of every step executed.
+

@@ -1,0 +1,995 @@
+
+docker commands will always work with root permissions
+
+Install docker
+
+$ sudo su -
+$ yum install docker -y
+$ systemctl start docker 
+
+Docker home directory:
+
+cd /var/lib/docker
+
+*************************
+
+
+Naming convetion for an zimage in docker is as follows
+
+ every image will have a unique name
+
+ every image will have a tag(verison)
+
+ Generally  name of image will look like:
+
+   imagename:tagname
+
+ docker will assume it has to pull image from docker hub library
+
+ so the actual image name is:
+
+ docker.io/library/imagename:tagname
+
+
+$ docker pull ubuntu
+
+
+$ docker pull ubuntu:18.04
+
+
+every user on docker hub have their own repository to store their custom image
+
+
+ in this case name of image will be
+
+ docker pull  sonal04/myimage:v1
+
+You have your own private container registry and a private repo
+
+
+ in this case name of image will be
+
+ docker pull  privateregitryip/myrepo/myimage:v1
+
+
+Commands to pull images on docker:
+
+docker pull ubuntu
+
+$ docker images
+
+$ docker pull ubuntu:18.04
+
+you cannot delete docker official images  in docker hub
+
+but you can deletd the pull images into docker host
+
+$ docker rmi Imagename:tagname 
+
+$ docker rmi ubuntu:18.04
+
+Create the container from an Image:
+
+$ docker run ubuntu
+
+to see if container is created or not
+
+a container will have status like: up, exited, exited(error code), 
+$ docker ps -a
+
+
+will return all the container in any status
+
+$ docker ps
+
+will return containers with status UP & running
+
+$ docker container ls
+
+will return containers with status UP & running
+
+
+Run options: options to be used with run command
+
+--name : to give a unique name to the container
+
+Creating a container 
+
+ > container should be up & running
+
+Method 1: Foreground mode (-it)
+
+  > the container status will be up & running
+  > user will be logged on to the terminal of the container
+  > user will be attched/connected to the container
+
+Method 2: Detached mode (-d)
+
+  > the container status will be up & running
+  > User will not be attached/connected to the container
+  > container will be running like running in background
+
+
+Command to delete container:
+
+$ docker rm -f containerid/name
+
+Create a container:
+
+docker run --name u1 -it ubuntu
+
+Comeout of container:
+
+comout of container and keep container running
+
+ $ CTL pq
+
+comout of container and keep container Exited status
+
+$ exit
+
+
+You are on the host machine and you want to connect to terminal of the OS container
+
+$ docker attach containerName/id
+
+$ docker stop u1
+
+$ docker start u1
+
+
+Execute a command on the conatiner from host cursor
+
+docker exec -it n1 bash
+
+
+Using the exec or attach command, you can access the application. folders.files on the conatiner
+
+You can access the applicationd eployed on container using your browser and container port number
+
+
+Port mapping/ port forwarding:
+
+This concept is applicaple to only web image
+
+not applicable to OS image
+
+
+Port mapping has to be done with docker run command
+
+after the conatiner is created/running, you cannot do port mapping neither you cannot chnage port number
+
+-p  : prt mapping option
+
+
+-p systemport:containerport
+
+docker run -p 8787:80 --name n2 -d nginx
+
+
+Method for portmapping 
+
+Use -P option
+
+In this case we dont provide any port number during the run command, docker system will do random port mapping
+of system port and container port
+
+docker run -d --name n1 -P nginx
+
+
+Volumes in Docker:
+*************
+
+2 types of volumes in docker
+
+
+1. Named volume:
+
+
+Demo1: Let us create a volume and give a name to the volume
+
+Volume is a directory in whcih we will preserve containers data
+
+where will this named volume directlry be available: it will under /var/lib/docker/volumes
+
+$ docker volume create myvol
+
+docker volume ls
+
+docker volume inspect myvol
+
+Location where the colume is created: /var/lib/docker/volumes/myvol/_data
+
+
+Demo 2: preserving the data of the container on the volume directory
+
+ docker run -it --name u1 -v myvol:/tmp ubuntu
+
+ you will be on the container
+
+ cd tmp
+ touch file1 file 2
+
+come out of container
+
+ctl pq
+
+go to vol directory
+
+/var/lib/docker/volumes/myvol/_data
+
+ls
+
+all the data will be there
+
+Demo 3: Create a file in the volume directory and check if the data is available on the container or not
+
+Assignment:
+Demo 4: Containers sharing the data
+
+
+2. Bind mounts
+
+Is a type of volume using which you can preserve data of the container on any directory of the host machine
+
+
+ volume mappping will be done as:
+
+ -v anydirectoryHost:directoryofcontainer
+
+Volume mapping has to be done at runtime only
+
+once container is created you cannot do volume mapping
+
+> Go to a repo with application code in github
+
+> Fetch all the code to local
+
+ > git clone https://github.com/Sonal0409/ecomm.git
+
+ /root/ecomm
+
+> copy the code on the container directory
+
+ Can be done using volume of type bind mounts
+
+> access the container from the browser my machine
+
+DOCKER FILE
+*****************************************
+Creating our own Images:
+
+2 ways:
+
+1. Creating an image from a running container
+2. Using a Docker file
+
+Method 1:Creating an image from a running container
+
+**********************************************
+
+# docker run --name c1 -it centos
+	#ls
+	# yum update -y
+	# yum install git -y
+	# git --version
+	# ctlp+ctlQ
+
+# docker commit c1 mycentosImage
+
+# docker images   // our image will be available with tag as latest
+
+//Create a container from our own Image
+
+# docker run --name c2 -it mycentosImage
+	
+push our image into Docker Hub:
+
+
+# docker tag mycentosImage:latest sonal04/mycentosImage:latest
+
+# docker images   // new image with new name will be created
+
+# docker login   //loginto docker hub
+Username:
+Password:
+
+# docker push dockerusername/mycentosImage:latest   //image will be pushed to docker hub
+
+
+Method2 : Creating a docker file and building an image from it
+*******************************************************
+it is a simple txt file.
+
+# vim dockerfile
+	i
+
+FROM centos    // base image information
+MAINTAINER edureka
+RUN yum -y update            // these are commands that we give for building the image
+RUN yum install git -y		// information about packages that shoudl be 					there on the image
+VOLUME /data
+:wq!
+
+# docker build -t mycentos:git .
+
+When we run the image -->container will be created.
+
+	# docker images
+
+
+	# docker run --name c1 -it mycentos1:dockerfile
+	
+
+==> data folder which is mounted for volume wll be there
+
+	
+
+OTher instructions that we can give in an Image :
+FROM: 
+
+MAINTAINER:
+
+RUN:
+
+CMD:
+
+VOLUME:
+
+EXPOSE:
+
+ADD:
+
+**************************************************
+
+Deploy Job in Jenkins:
+**************************************
+Steps to create a Jenkins job and create docker file and create container for addressbook.war
+
+1. Start the jenkins on AWS instance
+
+# systemctl start jenkins
+
+2. Start docker 
+# systemctl start docker
+
+3. Log into jenkins --> go to package job --go to console and copy the path of .war file
+
+4. create a new job -->Deploy
+
+5. Go to build -->shell command
+
+rm -rf mydockerfile
+mkdir mydockerfile
+cd mydockerfile
+cp /var/lib/jenkins/workspace/Package/target/addressbook.war .
+touch dockerfile
+cat <<EOT>> dockerfile
+From tomcat
+ADD addressbook.war /usr/local/tomcat/webapps
+EXPOSE 8080
+CMD ["catalina.sh", "run"]
+EOT
+sudo docker build -t myimage:$BUILD_NUMBER .
+sudo docker run -itd -P myimage:$BUILD_NUMBER
+
+Save the job
+
+Go to instance to give jenkins permission to execute docker commands. As of now we are logged in as admin in jenkins and it doesnt have permission to run docker commands.
+
+So go to
+vim /etc/sudoers
+i
+add under root
+Jenkins ALL=NOPASSWD: ALL
+:wq!
+
+Go back to jenkins and build now.
+
+==> New image and container will be created
+
+# docker images
+
+# docker ps -a
+
+Access from browser
+
+http://18.221.206.57:32768/addressbook/
+
+******************************************************************************
+Dockerfile2:
+
+FROM ubuntu
+RUN apt-get update
+RUN apt-get install nginx -y
+COPY index.html /var/www/html/
+EXPOSE 80
+CMD ["nginx","-g","daemon off;"]
+
+
+
+
+$ docker run -d --name n1 -p 8989:80 myimage02
+
+OR
+
+$ docker run -d --name n1 -P myimage02
+
+**************************************************
+Docker networking
+
+To set custome IP address range to your container in docker
+
+sudo vim /etc/default/docker
+add this line to file
+
+DOCKER_OPTS="--bip=10.66.33.10/24"
+then reboot
+after reboot start a container
+
+docker run -it --name t2 jangorecki/r-base-dev /bin/bash
+and check ip of a container
+
+docker inspect --format '{{ .NetworkSettings.IPAddress }}' t2
+
+
+OR
+
+docker exec -it c1 bash -c "echo -e 'IPADDR=172.17.0.4 \n HOSTNAME=c1' >> /etc/sysconfig/network-scripts/ifcfg-eth0; /etc/init.d/network restart";
+
+
+OR - to change the IP address of this docker container
+
+You will have to first detach the container from the custom network and the connect it back by providing the ip.
+
+You can follow the following steps :
+
+docker network disconnect [OPTIONS] NETWORK CONTAINER
+docker network connect --ip 192.168.150.3 NETWORK CONTAINER
+
+
+docker network ls
+   20  docker run -d --name myn1 nginx
+   21  docker ps -a
+   22  docker inspect myn1
+   23  clear
+   24  docker network create --driver bridge edureka1
+   25  docker network ls
+   26  docker network create --driver bridge edureka2
+   27  docker network ls
+   28  clear
+   29  docker run -itd --name b1 --network edureka1 busybox
+   30  docker inspect b1
+   31  clear
+   32  docker run -itd --name b2 --network edureka1 busybox
+   33  docker inspect b2
+   34  clear
+   35  docker attach b1
+   36  docker run -itd --name b3 --network edureka2 busybox
+   37  docker inspect b3
+   38  clear
+   39  docker attach b3
+   40  docker attach b2
+   41  docker network connect edureka2 b2
+   42  docker inspect b2
+   43  clear
+   44  docker attach b2
+
+
+
+docker- compose tool
+****************************************
+install the compose tool
+
+curl -SL https://github.com/docker/compose/releases/download/v2.7.0/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
+
+chmod +x /usr/local/bin/docker-compose
+
+docker-compose --version
+
+Create a file which is written in YAML
+
+name of the file will always be docker-compose.yml
+
+
+YAML is a file format to pass data
+
+
+How to write YAMl files
+
+key: value
+
+---
+company: edureka
+Trainings: 
+ - Devops
+ - aws
+ - azure
+ - kubernetes
+ - docker
+Timings: ["8.30PM","7AM","8AM","11PM"] 
+Trainer: 
+ - Sonal
+ - jack
+ - john
+days: weekdays
+
+...
+
+docker port mapping
+
+ systemport:containerport
+
+docker volume mapping
+
+ myvol:/tmp
+
+Example 1:
+
+version: '2'
+services:
+ compose-test:
+  image: centos:7
+  command: sleep infinity
+ compose-db:
+  image: redis
+  expose:
+   - "6379"
+   
+*****************
+Docker Swarm
+*****************************
+
+SETUP OF DOCKER SWARM:
+******************************
+Create 3 AWS instances and name them as Manager, worker 1 and worker 2.
+
+Go to git bash
+
+# cd downloads/
+
+# SSH path from AWS for manager
+
+# sudo su -
+
+# yum install docker
+
+# vim /etc/hostname  ==> to chnage the hostname of this machine to Manager
+
+:wq!  
+
+# init 6  ==> restart the machine
+
+
+Again open git bash
+
+# cd downloads/
+
+# SSH path from AWS for Worker1
+
+# sudo su -
+
+# yum install docker
+
+# vim /etc/hostname  ==> to chnage the hostname of this machine to Worker1
+
+:wq!  
+
+# init 6  ==> restart the machine
+
+Again open git bash
+
+# cd downloads/
+
+# SSH path from AWS for Worker2
+
+
+# sudo su -
+
+# yum install docker
+
+# vim /etc/hostname  ==> to chnage the hostname of this machine to Worker2
+
+:wq!  
+
+# init 6  ==> restart the machine
+
+****************************************
+Initialize the Swarm Manager:
+***************************************
+ON MANAGER:
+*************
+Go to the manager machine and give below command
+
+# systemctl start docker
+
+# docker swarm init --advertise-addr 172.31.17.248(privateip of manager)
+
+Curent node will be now be swarm Manager and it will generate a token id that can be executed on worker nodes so that they will join the swarm as workers.
+
+==> Copy the token id on notepad
+************************
+
+WORKER1 SETUP
+**********************
+
+# systemctl start docker
+
+paste the token command here from notepad  // as shown below:
+
+# docker swarm join --token SWMTKN-1-66xevqpe5r6h1gtcps1m867q8jcu93deyk87qudqdp7nyf8omk-7vna75w6jip5hmqp4h55bi3s3 172.31.17.248:2377
+
+// the worker1 will now join the swarm as worker
+It will give message as: This node joined a swarm as a worker.
+
+MANAGER NODE:
+
+Go to manager node and see if worker1 has joined the swarm or not
+
+# docker node ls
+
+2 nodes will be there .. maanager and worker1
+
+
+WORKER2 SETUP
+**********************
+
+# systemctl start docker
+
+paste the token command here from notepad  // as shown below:
+
+# docker swarm join --token SWMTKN-1-66xevqpe5r6h1gtcps1m867q8jcu93deyk87qudqdp7nyf8omk-7vna75w6jip5hmqp4h55bi3s3 172.31.17.248:2377
+
+// the worker2 will now join the swarm as worker
+It will give message as: This node joined a swarm as a worker.
+
+MANAGER NODE:
+
+Go to manager node and see if worker1 has joined the swarm or not
+
+# docker node ls
+
+3 nodes will be there .. maanager and worker1 and worker2
+
+**********SETUP COMPLETE********************************************
+
+
+SCEANRIO 1 : LOAD BALANCING or distribution of Service
+
+************************************************
+
+Here we will create a service nginx with 5 replicas and perform port mapping
+
+	# docker service create --name mywb -p 8989:80 --replicas 5 nginx
+
+==>This will create 5 replicas of nginx and it is distributed on the nodes.
+
+==> to check the services
+
+	# docker service ps mywb
+
+
+ List all services on SWARM
+*******************************
+	# docker service ls
+
+*********************************
+Delete service on the SWARm
+
+	# docker service rm mywb
+
+//removes service
+
+	# docker service ls  // no service will be there
+*****************************************
+Scaling
+****************************
+Scenario2:
+
+Using the concept of scaling we can increase or reduce the replicas
+
+
+1.Create tomcat service with replica 3 with posrt mapping
+
+# docker service create --name mytomcat  -p 9090:8080 --replicas 3 tomcat
+
+2. 	# docker service ps mytomcat
+
+3. Now scale up the service to 5
+
+	# docker service scale mytomcat=5
+
+4. check if 5 replicas of tomcat are running
+
+	# docker service ps mytomcat    
+
+// total of 5 services will be there 2 more services added.
+
+5. Now scale down the services to 3
+
+	# docker service scale mytomcat=3
+
+6.  check if 3 replicas of tomcat are running
+
+	# docker service ps mytomcat    
+
+// total of 3 services will be there.
+
+******************************************
+SCENARIO 3: FAILOVER
+**************************************
+A. Create a httpd service with 6 replicas and delete one replica running on the manager 
+
+1. Create httpd service with 6 replicas
+
+      # docker service create --name mywebserver -p 9090:80 --replicas 6 httpd
+
+2. Check if all 6 replicas are running or not.
+
+ 	# docker service ps mywebserver
+
+3. On the MANAGER machine, delete a replica
+
+	# docker ps -a  // replicas will be displayed
+	# docker rm -f containername  // replica will be deleted
+	
+# docker ps -a
+# docker service ps mywebserver
+
+3. Drain worker1 from the swarm 
+	
+	# docker node ls
+	# docker node update --availability drain Worker1
+
+4. check if all 6 replicas are running on manager and worker2
+ 
+	# docker service ps mywebserver
+	
+	# docker service ps mywebserver | grep Running
+
+5. Make worker1 join the swarm again
+
+        # docker node update --availability active Worker1
+
+6. check if all 6 replicas are running on manager and worker1 and 2
+ 
+	# docker service ps mywebserver
+
+7. we can also go to worker2 git bash and leave the swarm
+	# systemctl start docker
+	# docker swarm leave
+
+
+8.Connect back to manager
+
+# docker node ls
+
+worker 2 will be in status down and Active
+
+9. Remove the worker2 node from the swarm
+
+	# docker node rm Worker2
+
+Worker 2 will not be in swarm now.
+
+	# docker node ls
+
+9.Check if all the replicas are still running or not.
+
+	# docker services ps webserver
+
+10. join back the worker2 to swarm
+
+	# docker swarm join-token worker
+
+copy the token and paste it on worker 2 machine
+
+docker swarm join --token SWMTKN-1-195rkd1a6332n2izpccyfn9d29q1mqs72ja0d4ueo63xyetrum-6t7d8m9tfcw9qtj86ske56p0q 172.31.44.159:2377
+
+Worker2 will join the swarm again
+
+on Manager machine:  # docker node ls   // worker 2 will be active and running
+
+**********************************************************
+ROLLING UPDATE/ ROLLING OUT:
+*************************************************************
+
+Create redis:3 with 5 replicas and update it to redis:4 and latter roll it back to redis:3
+
+1.Create redis:3 with 5 replicas
+
+# docker service create --name myredis --replicas 5 redis:3
+
+2.Check if 5 replicas are running or not
+
+Docker service ps myredis
+
+3.perform a rolling update from redis:3 to redis:4
+
+# docker service update --image redis:4 myredis
+
+4.Check if 5 replicas of redis:3 are shutdown and redis:4 are up and running
+
+# docker service ps myredis
+
+5.Perform roll back from redis:4 to redis:3
+
+# docker service update --rollback myredis
+
+6.Check if 5 replicas of redis:4 are shutdown and redis:3 are up and running
+
+# docker service ps myredis
+
+*****************************************************
+
+OVERLAY NETWORK
+
+****************************************************
+
+Create 1 custom overlay networks overlay1 
+
+Usecase 1: Create a tomcat service in swarm on overlay1 network
+
+
+1.Create 1 overlay network
+
+
+# docker network create --driver overlay overlay1
+
+2. Check if the networks are created or not
+
+# docker network ls
+
+3. Start tomcat service with 3 replicas on overlay1 network
+
+# docker service create --name mytomcat -p 8888:80 replicas 3 --network overlay1 tomcat
+
+4. Check if tomcat service is running on overlay1 network
+
+# docker service inspect mytomcat
+OR
+
+# docker service inspect mywebserver --pretty
+
+
+In network you will see netwrok to be overlay1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

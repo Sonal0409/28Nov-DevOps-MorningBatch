@@ -1,0 +1,313 @@
+Docker Notes:
+**************************
+
+#### On Centos:
+
+# yum install docker -y
+
+Start docker
+
+# systemctl start docker
+
+
+### INSTALL DOCKER 
+
+sudo apt-get update
+sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+sudo apt-get update ; clear
+sudo apt-get install -y docker-ce
+
+service docker start
+
+
+
+*******************************
+
+Docker HUb -> registry where docker free images are available, you can also store images in Docker hub
+
+However there are many private registry are available where organization tend to save their custom images
+
+Some of the Registries:
+
+Docker HUB
+
+AwS - ECS
+
+DTR - Docker trusted registry
+
+Private registry on your local machine on port 5000
+
+
+Lets check docker hub and see how bases images are:
+
+
+Docker Images:
+*****************
+
+Every image will have a name and a tag mantodory
+
+Every image can have many tags but signle name
+
+How will docker know form where to pull the image and which tag to pull??
+
+
+# docker pull ubuntu
+
+Every images carries its address with it
+
+
+The image name includes
+
+ registryname/reponame/imagename:tagname
+  
+
+
+ when i say just ubuntu : docker will assume by default
+
+
+  dockerhub/library/ubuntu:latest
+
+docker.io/library/ubuntu:latest
+
+When working in projects-> image name will look like this:
+
+docker pull  awsECR023435345/myapp:01
+
+example.com/admin/webserver:v1
+
+Private registry which on a server (12.34.56.78) and port number 5000
+
+ imagenmae will look like this:
+
+  12.34.56.78:5000/sonal/myimage:tag1
+
+
+
+Images Command:
+
+Command to check images on local:
+
+# docker images
+
+# docker pull ubuntu:18.04
+
+Run the Image to launch the Container:
+
+# docker run Imagename:tagname
+
+# docker run ubuntu
+
+to check container details:
+
+# docker ps -a
+
+Various RUN options:
+
+--name ==> you can set a unique name to the container
+
+# docker run --name cont1 ubuntu
+
+# docker ps -a
+
+Run options to start the container:
+
+2 ways to start conatiner
+
+We have to provide any one the options to start the container, otherwise the contaienr will always be in exited
+
+
+> Forground mode (-it)
+
+This mode is used for images of type OS images
+
+In this case:
+
+> Container will be created
+> Contaienr status will be UP
+> and you will logged on the container process
+> user will be attached to the terminal fo the container
+
+Demo:
+
+# docker run --name cont2 -it ubuntu
+
+Come out of the container:
+
+# ctl + pq
+
+> you will out of conatiner and containe will be running
+
+OR
+
+give exit
+
+> you will out of conatiner and containe will go in exited status
+
+# docker ps -a
+
+
+How can we attach to the terminal of the OS container again:
+
+# docker attach contName/ContID
+
+This command works only if a container is up & running
+
+
+
+> detached Mode (-d)
+
+
+If your image is of type web, we will use detached mode
+
+# docker run -d --name cont1 nginx
+
+
+In this case:
+
+> Container will be created
+> Contaienr status will be UP
+> and you will not logged on the container process
+> user will not be attached to the terminal of the container
+
+
+Agenda:
+*********************
+
+> port Mapping
+
+1. This scenario is applicable only to web based Images
+
+2. Port binding will always be done when creating the container
+
+3. Once a container is created/exisitng you cannot do port binding
+
+4. In port binding, you cannot change the container port. You can check the container port on the image by 
+checking the option Expose
+
+5. You can give you own system port(ec2 VM port), it can a 4 digit number or 5 digit number
+
+6. every container will have to mapped to a unique system port
+
+
+It can be done in 2 ways:
+
+
+1. -p
+
+> in this case user will provide his own systemport and map to the container exposed port
+
+syntax: docker run --name cont2 -d -p systemport:containerport nginx
+
+
+docker run --name cont2 -d -p 8989:80 nginx
+
+*** 2. -P
+
+In this cases when with run command we give -P option, docker will do the port mapping 
+where in random system port will be mapped to container port automatically 
+
+docker run --name cont2 -d -P nginx
+
+
+**************************************************
+
+Docker Volumes:
+
+
+> This concept is used to preserve the data of the container's directory on the host machine
+
+> This concept can also be used in order to copy data from hostmachine to contaienr directory
+
+> volume mapping is also done at runtime. if the container is already created, you cannot do the volume mapping
+
+Method: Named Volumes
+
+# docker volume ls
+
+# docker volume create myvol
+
+Named Volumes in docker are always created in the directory => /var/lib/docker/volumes/myvol
+
+The data of the container will be preserved in this location:
+
+/var/lib/docker/volumes/myvol/_data
+
+
+> Now preserve the data of the container's directory on the Host volume myvol
+
+you will mount in the following way:
+
+-v Namedvolume:/anydireof container
+
+docker run -it --name cont1 -v myvol:/tmp ubuntu
+
+Now lets see :
+
+ copy data from hostmachine(volume) to contaienr directory
+
+
+***********************************
+
+Bind mount
+
+Any directory on the hostmachine can preserve the data of container
+and you can copy data on the container sirectory from any host directory
+
+In this case no specific named volume is created
+
+docker run -d --name cont2 -v anydirPath:/pathofcontadir httpd
+
+Integrate git and docker
+*****************************
+
+Step 1:
+
+Code is in git hub, I want the code in docker host
+
+# yum install git -y
+
+ git clone https://github.com/Sonal0409/ecomm.git
+
+Present working directory with code
+
+/root/ecomm
+
+
+Step 2: you need to create a container of image httpd and mount/copy  these code file from host machine 
+on the container directory
+
+
+# docker run -d --name web -v  /root/ecomm/:/usr/local/apache2/htdocs/     httpd
+
+
+Step 3: we should also be able to access the contaienr from brower, so what option will you give in the command
+
+
+# docker run -d --name web -v  /root/ecomm/:/usr/local/apache2/htdocs/  -P   httpd
+
+
+Step 4: Deveoper make changes in the github on the index.html file
+
+git pull origin master
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
