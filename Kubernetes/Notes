@@ -34,6 +34,7 @@ spec:
   kubectl logs pod1
   kubectl logs -f pod1
   kubectl logs -f pod1 -c c1  
+  kubectl delete pods -l env=QA
   
   
   
