@@ -29,6 +29,39 @@ spec:
   kubectl get pods -l app=frontend
   
   For pod and container logs:
+ 
+ --------------------------------------------------------------
+ vim replicasetdemo.yaml
+---  
+  apiVersion: apps/v1
+  kind: Replicaset
+  metadata:
+   name: daniel
+  spec:
+   replicas:3
+   selector:
+    matchlabels:
+     type:webserver
+   template:
+    metadata:
+     name:mypod
+     labels:
+      author:dan
+      type:webserver
+    spec:
+    containers:
+     name: c1
+     image: nginx
+ ...  
+ 
+ kubectl create -f replicasetdemo.yaml
+ kubectl get all
+ kubectl get pod -l type=webserver
+ kubectl scale replicaset nameofreplicaset --replicas=5
+ 
+ 
+ ----------------------------------------------------------------------
+     
   
   kubectl describe pod pod1 | less
   kubectl logs pod1
