@@ -68,6 +68,7 @@ spec:
   kubectl logs -f pod1
   kubectl logs -f pod1 -c c1  
   kubectl delete pods -l env=QA
+  kubectl describe service serviceName
   
   
   
