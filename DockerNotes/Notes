@@ -257,6 +257,19 @@ once container is created you cannot do volume mapping
 
 DOCKER FILE
 *****************************************
+
+FROM ubuntu
+RUN apt-get update
+RUN apt-get install git -y
+COPY copy.txt /tmp
+ADD compress.tar.gz /tmp
+[ec2-user@DOCKERHOST mydockerfiles]$ vim copy.txt
+[ec2-user@DOCKERHOST mydockerfiles]$ [ec2-user@DOCKERHOST mydockerfiles]$ touch compress.txt
+[ec2-user@DOCKERHOST mydockerfiles]$ ls
+compress.txt  copy.txt  Dockerfile
+[ec2-user@DOCKERHOST mydockerfiles]$ tar -czvf compress.tar.gz compress.txt
+
+
 Creating our own Images:
 
 2 ways:

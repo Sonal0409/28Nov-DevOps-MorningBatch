@@ -282,6 +282,8 @@ on the container directory
 
 # docker run -d --name web -v  /root/ecomm/:/usr/local/apache2/htdocs/     httpd
 
+docker run --name myecomm -d -P -v /root/ecomm:/usr/local/apache2/htdocs/ httpd
+
 
 Step 3: we should also be able to access the contaienr from brower, so what option will you give in the command
 
